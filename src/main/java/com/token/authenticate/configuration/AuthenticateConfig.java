@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class AuthenticateConfig {
 
-    @Value("{jwt.token.secret}")
+    @Value("${jwt.token.secret}")
     private String secretKey;
     private final UserService userService;
 
@@ -29,12 +29,12 @@ public class AuthenticateConfig {
                 .cors().and()
                 .authorizeHttpRequests()
                 .antMatchers("/api/v1/users/login").permitAll()
-                .antMatchers(HttpMethod.POST, "/api/v1/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/reviews").authenticated()
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(new JwtTokenFilter(userService, secretKey), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenFilter(secretKey, userService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
